@@ -1,14 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/welsonoktario/prakerja-unjuk-ketrampilan/database"
-	"github.com/welsonoktario/prakerja-unjuk-ketrampilan/handlers"
+	"github.com/welsonoktario/prakerja-unjuk-ketrampilan/routes"
 )
 
 func main() {
@@ -22,13 +24,9 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	// Create a /api/v1 endpoint
-	v1 := app.Group("/api/v1")
+	// Register routes
+	routes.Register(app)
 
-	// Bind handlers
-	v1.Get("/users", handlers.GetAllUsers)
-	v1.Post("/users", handlers.GetUser)
-
-	// Listen on port 3000
-	log.Fatal(app.Listen(":8080")) // go run app.go -port=:3000
+	// Listen on port by env APP_PORT value
+	log.Fatalln(app.Listen(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT"))))
 }
